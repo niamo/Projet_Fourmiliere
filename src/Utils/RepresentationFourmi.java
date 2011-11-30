@@ -83,7 +83,7 @@ public class RepresentationFourmi extends Representation{
 		// Si elle chasse et qu'elle trouve une proie, elle doit rentrer
 		if(this.fourmi.etat == Constantes.Etat.chasse && this.regionActuelle.presenceProie() != null)
 		{
-			this.fourmi.proieCapturee = this.regionActuelle.presenceProie().getPoids();
+			this.fourmi.proieCapturee = this.regionActuelle.presenceProie().instanceProie().getPoids();
 			this.regionActuelle.retirerElement(this.regionActuelle.presenceProie());
 			this.fourmi.etat = Constantes.Etat.retourMaison;
 		}

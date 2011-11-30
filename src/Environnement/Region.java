@@ -71,10 +71,16 @@ public class Region {
 	
 	public void retirerElement(Object o)
 	{
-		this.element.remove(o);
+		for(int i = 0; i < this.element.size(); i++)
+		{
+			if(element.get(i) == o)
+			{
+				this.element.remove(i);
+			}
+		}
 	}
 	
-	public Proie presenceProie()
+	public RepresentationProie presenceProie()
 	{
 		Object o;
 		for(int i = 0; i < this.element.size(); i++)
@@ -82,7 +88,7 @@ public class Region {
 			o = this.element.get(i);
 			if( o instanceof RepresentationProie)
 			{
-				return ((RepresentationProie)o).instanceProie();
+				return (RepresentationProie)o;
 			}
 		}
 		return null;
