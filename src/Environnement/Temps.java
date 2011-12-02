@@ -8,9 +8,8 @@ import Utils.Constantes;
 
 public class Temps implements Runnable{
 
-	public UniteTemps UT;
+	UniteTemps UT;
 	Chronos maitre;
-	private boolean pause;
 	private static int time;
 
 	
@@ -22,15 +21,9 @@ public class Temps implements Runnable{
 		(new Thread(this)).start();
 	}
 	
-	public void run() {
-        
-        while(!pause) {
-                
-                /*if( (time % getMoisVersUT()) == 0) {
-                        System.out.println("=> Nouveau mois");
-                }*/
-                
-                //attendre une minute
+	public void run()
+	{
+        while(true) {
                 try {
                         Thread.sleep(Constantes.tempsJournee);
                         Thread.yield();
@@ -39,7 +32,7 @@ public class Temps implements Runnable{
                 }
     			incrementationTemps();               
         }
-}
+	}
 
 	public void afficherTemps() {
 		System.out.println("Calendar :"+UT.Affichage());	
@@ -52,6 +45,8 @@ public class Temps implements Runnable{
 		int Month = UT.cal.get(Calendar.MONTH);
 		int Year = UT.cal.get(Calendar.YEAR);
 		UT.cal.set(Calendar.HOUR, UT.cal.get(Calendar.HOUR)+1);
+		
+		this.maitre.nouvelleHeure();
 		
 		if(UT.cal.get(Calendar.DATE) != Day)
 		{

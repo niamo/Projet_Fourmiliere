@@ -3,7 +3,7 @@ package Fourmi;
 
 
 
-public class Adulte extends Etape_Fourmi{
+public class Adulte extends EtapeFourmi{
 
 	@Override
 	public void fairePour(Fourmi f) {

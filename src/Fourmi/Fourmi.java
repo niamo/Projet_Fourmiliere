@@ -1,6 +1,7 @@
 package Fourmi;
 
 
+import Utils.Aleatoire;
 import Utils.Constantes;
 import Utils.Constantes.*;
 
@@ -11,15 +12,16 @@ public abstract class Fourmi {
 
 	
 	public Etat etat; 
-	public int naissance;
 	public int proieCapturee;
-	public int dureeVie;
-	public int dernierRepas;
-	public double poids;
-	public Etape_Fourmi etape;
-	public Fourmilliere fourmilliere;
-	public int pheromonisation;
 	public boolean aLaMaison = true;
+	int naissance;
+	int dureeVie;
+	int dernierRepas;
+	double poids;
+    EtapeFourmi etape;
+	Fourmilliere fourmilliere;
+	int pheromonisation;
+
 	
 	public abstract void fairePourOeuf(Oeuf oeuf);
 	public abstract void fairePourAdulte(Adulte adulte);
@@ -42,7 +44,7 @@ public abstract class Fourmi {
 	public void mangerPourLarve(Larve larve){
 		if(!aRecemmentManger())
 		{
-			if(fourmilliere.reserve.retirerNourriture(this.poids))
+			if(fourmilliere.reserve.retirerNourriture(this.poids*(2+Aleatoire.nouveauRandom().nextInt(1))))
 				this.dernierRepas = mangeUnBout();
 
 		}
@@ -57,21 +59,20 @@ public abstract class Fourmi {
 
 	public void verificationVivanteAdulte(Adulte adulte)
 	{
-	//	System.out.println((this.naissance+this.dureeVie)+"--"+Temps.nbHeuresDepuisDebut());
 		if(this.naissance+this.dureeVie < Temps.nbHeuresDepuisDebut())
 		{
 			this.meurs();
 		}else
 		{
-			//System.out.println((this.dernier_repas+Constantes.meursDeFaim)+"--"+Temps.nbHeuresDepuisDebut());
 			if(this.dernierRepas+Constantes.meursDeFaim < Temps.nbHeuresDepuisDebut())
+			{
 				this.meurs();
+			}
 		}
 	}
 
 	public void verificationVivanteLarve(Larve larve)
 	{
-	//	System.out.println((this.dernier_repas+Constantes.meursDeFaim)+"--"+Temps.nbHeuresDepuisDebut());
 		if(this.dernierRepas+Constantes.meursDeFaim < Temps.nbHeuresDepuisDebut())
 			this.meurs();
 	}
@@ -81,8 +82,6 @@ public abstract class Fourmi {
 		if(this.naissance+Constantes.dureeOeuf < Temps.nbHeuresDepuisDebut())
 		{
 			this.etape = new Larve();
-			this.fourmilliere.nbOeufs--;
-			this.fourmilliere.nbLarves++;
 			this.dernierRepas = mangeUnBout();
 		}
 	}
@@ -91,8 +90,6 @@ public abstract class Fourmi {
 		if(this.naissance+Constantes.dureeOeuf+Constantes.dureeLarve < Temps.nbHeuresDepuisDebut())
 		{
 			this.etape = new Nymphe();
-			this.fourmilliere.nbLarves--;
-			this.fourmilliere.nbNymphes++;
 		}
 	}
 	public void verificationEvolutionNymphe(Nymphe nymphe)
@@ -100,8 +97,6 @@ public abstract class Fourmi {
 		if(this.naissance+Constantes.dureeLarve+Constantes.dureeNymphe+Constantes.dureeOeuf < Temps.nbHeuresDepuisDebut())
 		{
 			this.etape = new Adulte();
-			this.fourmilliere.nbNymphes--;
-			this.fourmilliere.nbAdultes++;
 			this.dernierRepas = mangeUnBout();
 		}
 	}
@@ -111,7 +106,7 @@ public abstract class Fourmi {
 	public void nettoyerFourmilliere() {
 		if(this.aLaMaison)
 		{
-			if(this.fourmilliere.nbCadavres > 0)
+			if(this.fourmilliere.nbCadavres() > 0)
 			{
 				this.fourmilliere.retirerCadavre();
 			}
@@ -130,8 +125,6 @@ public abstract class Fourmi {
 	}
 
 	public void meurs() {
-		System.out.println("JDIE");
-		this.fourmilliere.nbCadavres++;
 		this.fourmilliere=null;
 	}
 	
@@ -149,6 +142,21 @@ public abstract class Fourmi {
 	{
 		return Temps.nbHeuresDepuisDebut();
 	}
+	
+	
+	public double poids()
+	{
+		return this.poids;
+	}
 
+	public EtapeFourmi etape()
+	{
+		return this.etape;
+	}
+	
+	public Fourmilliere fourmilliere()
+	{
+		return this.fourmilliere;
+	}
 
 }

@@ -1,8 +1,5 @@
 package Fourmi;
 
-
-
-
 import Utils.Constantes;
 import Environnement.Fourmilliere;
 

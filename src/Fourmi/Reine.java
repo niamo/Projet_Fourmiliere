@@ -1,12 +1,9 @@
 package Fourmi;
 
-
-
 import Utils.Constantes;
 
 import Environnement.Fourmilliere;
 import Environnement.Temps;
-
 
 
 public final class Reine extends Fourmi{

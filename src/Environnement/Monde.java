@@ -5,17 +5,26 @@ import java.util.ArrayList;
 import Utils.Constantes;
 import Utils.RepresentationFourmilliere;
 
+/**
+ * Classe monde, contenant un tableau de régions
+ * une liste de changements phéromones et de changements fourmis 
+ * permettant un réaffichage plus rapide
+ * 
+ *
+ */
 
 public class Monde{
-	Region monde[][] = new Region[Constantes.mondeX][Constantes.mondeY];
-	ArrayList<Region> changements;
+	public Region monde[][] = new Region[Constantes.mondeX][Constantes.mondeY];
+	ArrayList<Region> changementsPheromones;
+	ArrayList<Region> changementsFourmis;
 	Region RegionFourmilliere; 
 	Temps temps;
 	
 	
 	public Monde(Temps temps)
 	{
-		this.changements = new ArrayList<Region>();
+		this.changementsFourmis = new ArrayList<Region>();
+		this.changementsPheromones = new ArrayList<Region>();
 		this.temps = temps;
 		for(int x = 0; x < Constantes.mondeX; x++)
 		{
@@ -27,34 +36,49 @@ public class Monde{
 		BIGBANG();
 	}
 	
+	
+	/**
+	 * Création du monde !
+	 * Ajout d'une fourmilliere au centre du monde
+	 */
 	void BIGBANG()
 	{
 		this.monde[Constantes.mondeX/2][Constantes.mondeY/2].creerFourmilliere();
 		RegionFourmilliere = this.monde[Constantes.mondeX/2][Constantes.mondeY/2];
-		this.monde[95][97].ajouterProie();
 	}
 	
+	/**
+	 * Instance unique de la fourmilliere
+	 */
 	public Fourmilliere recupererFourmilliere()
 	{
 		return ((RepresentationFourmilliere)this.RegionFourmilliere.element.get(0)).instanceFourmilliere();
 	}
 	
-	public void start()
+	/**
+	 * Lancement du monde
+	 */
+	public void lancementMonde()
 	{
 		for(int x = 0; x < Constantes.mondeX; x++)
 		{
 			for(int y = 0; y < Constantes.mondeY; y++)
 			{
-				this.monde[x][y].run();
+				this.monde[x][y].lancementRegion();
 			}
 		}
 	}
 	
-	
-	public ArrayList<Region> accederChangements()
+	public ArrayList<Region> accederChangementsFourmis()
 	{
-		return this.changements;
+		return this.changementsFourmis;
 	}
+	
+	public ArrayList<Region> accederChangementsPheromones()
+	{
+		return this.changementsPheromones;
+	}
+	
 	
 	
 	public Region accederRegion(int x, int y)

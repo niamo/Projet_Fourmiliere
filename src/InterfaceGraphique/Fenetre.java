@@ -5,15 +5,12 @@ import javax.swing.*;
 import Environnement.Dieu;
 
 public class Fenetre extends JFrame{
-
-	/**
-	 * 
-	 */
+	
 	private static final long serialVersionUID = 1L;
 	JPanel container = new JPanel();
 	JPanel panelInfos = new JPanel();
 	JPanel panelHeureStock = new JPanel();
-	JPanel panelMonde = new JPanel();
+	JPanel panelMonde;
 	
 	/* Layouts */
 	GridLayout layoutInfos = new GridLayout(4,2);
@@ -37,13 +34,14 @@ public class Fenetre extends JFrame{
 	
 	public Fenetre(Dieu d){
 		super();
+		panelMonde = new MapPanel(d.instanceMonde());
 		construireFenetre(d);
 	}
 	
 	public void construireFenetre(Dieu d) {  
 
 		setTitle("Fourmiz"); //On donne un titre à l'application
-		setSize(800,600); //On donne une taille à notre fenêtre
+		setSize(640,480); //On donne une taille à notre fenêtre
 		setLocationRelativeTo(null); //On centre la fenêtre sur l'écran
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); //On dit à l'application de se fermer lors du clic sur la croix
 
@@ -61,7 +59,7 @@ public class Fenetre extends JFrame{
 		this.date.setHorizontalAlignment(SwingConstants.RIGHT);
 		this.stock.setHorizontalAlignment(SwingConstants.RIGHT);
 		
-		this.repaint(d);
+		//this.repaint(d);
 		
 		/* Ajout des labels au gridlayouts */
 		this.panelInfos.add(nbOeufs);
@@ -84,8 +82,6 @@ public class Fenetre extends JFrame{
 		/* Ajouts des gridlayouts aux pannels */
 		this.panelInfos.setLayout(layoutInfos);
 		this.panelHeureStock.setLayout(layoutInfos);
-		this.panelMonde.setSize(200, 200);
-		System.out.println(this.panelMonde.getSize());
 		
 		
 		/* definition de notre pannel */
@@ -100,16 +96,17 @@ public class Fenetre extends JFrame{
 	}
 	
 	public void repaint(Dieu d){
-		this.nbOeufs.setText("Nombre d'oeufs : "+d.instanceMonde().recupererFourmilliere().nbOeufs.toString());
-		this.nbLarves.setText("Nombre de larves : "+d.instanceMonde().recupererFourmilliere().nbLarves.toString());
-		this.nbNymphes.setText("Nombre de nymphes : "+d.instanceMonde().recupererFourmilliere().nbNymphes.toString());
-		this.nbAdultes.setText("Nombre d'adultes : "+d.instanceMonde().recupererFourmilliere().nbAdultes.toString());
-		this.nbOuvrieres.setText("Nombre d'ouvrieres : "+d.instanceMonde().recupererFourmilliere().nbOuvrieres.toString());
-		this.nbSoldats.setText("Nombre de soldats : "+d.instanceMonde().recupererFourmilliere().nbSoldats.toString());
-		this.nbSexues.setText("Nombre de sexues : "+d.instanceMonde().recupererFourmilliere().nbSexues.toString());
+		this.nbOeufs.setText("Nombre d'oeufs : "+d.instanceMonde().recupererFourmilliere().nbOeufs());
+		this.nbLarves.setText("Nombre de larves : "+d.instanceMonde().recupererFourmilliere().nbLarves());
+		this.nbNymphes.setText("Nombre de nymphes : "+d.instanceMonde().recupererFourmilliere().nbNymphes());
+		this.nbAdultes.setText("Nombre d'adultes : "+d.instanceMonde().recupererFourmilliere().nbAdultes());
+		this.nbOuvrieres.setText("Nombre d'ouvrieres : "+d.instanceMonde().recupererFourmilliere().nbOuvrieres());
+		this.nbSoldats.setText("Nombre de soldats : "+d.instanceMonde().recupererFourmilliere().nbSoldats());
+		this.nbSexues.setText("Nombre de sexues : "+d.instanceMonde().recupererFourmilliere().nbSexues());
 
-		this.date.setText(""+d.instanceMonde().recupererFourmilliere().calendrier.getTime());
+		this.date.setText(""+d.instanceMonde().recupererFourmilliere().calendrier().getTime());
 		this.stock.setText("Stock : "+d.instanceMonde().recupererFourmilliere().reserve.toString());
+		this.panelMonde.repaint();
 		
 	}
 	

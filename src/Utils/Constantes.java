@@ -8,13 +8,15 @@ public class Constantes {
 		chasse, retourMaison, aFaim, nettoye, copule, neFaisRien
 	}
 	
-	public static int dureeLarve = 48;
-	public static int dureeOeuf = 72;
-	public static int dureeNymphe = 96;
+	public static int dureeLarve = 24;//48;
+	public static int dureeOeuf = 36;//72;
+	public static int dureeNymphe = 48;//96;
 	
 	public static int eloignementMax = 200;
+	public static int vitesseDeplacement = 2;
 	public static int mondeX = 200;
 	public static int mondeY = 200;
+	public static int taillePixelFourmilliere = 10;
 
 	public static Integer ageMinReine = 1460;
 	public static Integer ageMaxReine = 3650;
@@ -30,16 +32,9 @@ public class Constantes {
 	public static int tempsDeplacement = 10;
 	public static int tempsJournee = 100;
 	
-	public static int aFaim = 20;
-	public static int meursDeFaim = 30;
-	public static int nbOeufsJour = 5;
-
-	public static enum typeFourmi{
-		Reine, 
-		Ouvriere, 
-		Sexue,
-		Soldat,
-	}
+	public static int aFaim = 50;
+	public static int meursDeFaim = 70;
+	public static int nbOeufsJour = 8;
 	
 	public static double pourcentageMinOuvriere = 0.60;
 	public static double pourcentageMaxOuvriere = 0.70;

@@ -6,17 +6,21 @@ import Environnement.Fourmilliere;
 import Environnement.Temps;
 
 public class Aleatoire {
-	static Random random = new Random();
+	
+	public static Random nouveauRandom()
+	{
+		return new Random();
+	}
 	
 	public static Integer dureeVieReine(){
 		Integer dureevie;
-		dureevie = Constantes.ageMinReine + random.nextInt(Constantes.ageMaxReine-Constantes.ageMinReine);
+		dureevie = Constantes.ageMinReine + nouveauRandom().nextInt(Constantes.ageMaxReine-Constantes.ageMinReine);
 		return dureevie;
 	}
 	
 	public static Integer dureeVieFourmi(){
 		Integer dureevie;
-		dureevie = Constantes.ageMinFourmi + random.nextInt(Constantes.ageMaxFourmi-Constantes.ageMinFourmi);
+		dureevie = Constantes.ageMinFourmi + nouveauRandom().nextInt(Constantes.ageMaxFourmi-Constantes.ageMinFourmi);
 		return dureevie;
 	}
 	
@@ -28,11 +32,11 @@ public class Aleatoire {
 	
 	public static Fourmi naissanceFourmi(Fourmilliere f){
 		
-		Integer taille = f.fourmilliere.size();
+		Integer taille = f.fourmilliere().size();
 		
-		float pourcentageOuvriere = ((float)f.nbOuvrieres/(float)taille);
-		float pourcentageSoldat = ((float)f.nbSoldats/(float)taille);
-		float pourcentageSexue = ((float)f.nbSexues/(float)taille);
+		float pourcentageOuvriere = ((float)f.nbOuvrieres()/(float)taille);
+		float pourcentageSoldat = ((float)f.nbSoldats()/(float)taille);
+		float pourcentageSexue = ((float)f.nbSexues()/(float)taille);
 		
 		double differenceOuvriere = maximum(Constantes.pourcentageMaxOuvriere-pourcentageOuvriere, Constantes.pourcentageMinOuvriere-pourcentageOuvriere);
 		double differenceSoldat = maximum(Constantes.pourcentageMaxSoldat-pourcentageSoldat, Constantes.pourcentageMinSoldat-pourcentageSoldat);
@@ -42,13 +46,10 @@ public class Aleatoire {
 		double max = maximum(differenceOuvriere, maximum(differenceSoldat, differenceSexue));
 		
 		if(max == differenceOuvriere){
-			f.addOuvriere();
 			return new Ouvriere(f,Temps.nbHeuresDepuisDebut(), Aleatoire.poidsFourmi(),Aleatoire.dureeVieFourmi() );
 		}else if(max == differenceSoldat){
-			f.addSoldat();
 			return new Soldat(f,Temps.nbHeuresDepuisDebut(), Aleatoire.poidsFourmi(), Aleatoire.dureeVieFourmi());
 		}else{
-			f.addSexue();
 			return new Sexue(f,Temps.nbHeuresDepuisDebut(), Aleatoire.poidsFourmi(), Aleatoire.dureeVieFourmi());
 		}
 		

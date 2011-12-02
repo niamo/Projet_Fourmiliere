@@ -1,7 +1,5 @@
 package Utils;
 
-import java.util.ArrayList;
-
 import Environnement.Region;
 import Fourmi.Fourmi;
 
@@ -20,11 +18,13 @@ public class RepresentationFourmi extends Representation{
 		this.pos = region.donnePos();
 	}
 
-	public void run(RepresentationFourmi f) {
+	public void lancementFourmi(RepresentationFourmi f) {
 		verificationFourmiPerdu();
-		f.fourmi.etape.fairePour(fourmi);
-		if(f.fourmi.estVivant())
+		f.fourmi.etape().fairePour(fourmi);
+		if(f.fourmi.estVivant()){
 			this.deplacementFourmi();
+		}
+		
 	}
 	
 	public Fourmi instanceFourmi()
@@ -33,7 +33,10 @@ public class RepresentationFourmi extends Representation{
 	}
 
 	private void verificationFourmiPerdu() {
-		if((this.pos.getX() > Constantes.eloignementMax)||(this.pos.getY() > Constantes.eloignementMax))
+		if((this.pos.getX() - this.fourmi.fourmilliere().region().donnePos().getX() > Constantes.eloignementMax)
+				|| (this.pos.getY() - this.fourmi.fourmilliere().region().donnePos().getY() > Constantes.eloignementMax)
+				|| (this.pos.getX() - this.fourmi.fourmilliere().region().donnePos().getX() < -Constantes.eloignementMax)
+				|| (this.pos.getX() - this.fourmi.fourmilliere().region().donnePos().getY() < -Constantes.eloignementMax))
 		{
 			this.fourmi.meurs();
 		}
@@ -45,27 +48,30 @@ public class RepresentationFourmi extends Representation{
 				|| this.fourmi.etat == Constantes.Etat.retourMaison)
 		{
 			Region regionFuture = regarderAutour();
-			this.regionActuelle.instanceMonde().accederChangements().add(this.regionActuelle);
-			this.regionActuelle.instanceMonde().accederChangements().add(regionFuture);
+			this.regionActuelle.instanceMonde().accederChangementsPheromones().add(this.regionActuelle);
+			this.regionActuelle.instanceMonde().accederChangementsFourmis().add(regionFuture);
 			deplacementRegion(regionFuture);
+			
 			try {
-				Thread.sleep(5);
+				Thread.sleep(0,2);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+			
 		}
 	}
 	
 	private void deplacementRegion(Region regionPheromonisee) 
 	{
-		if(this.fourmi.etat == Constantes.Etat.retourMaison && this.fourmi.proieCapturee > 0)
+		if(this.fourmi.etat != Constantes.Etat.retourMaison)
 			this.regionActuelle.rafraichirTaux(this);
+		
 		this.regionActuelle.retirerElement(this);
 		this.pos = regionPheromonisee.donnePos();
 		regionPheromonisee.ajouterElement(this);
 		this.regionActuelle=regionPheromonisee;
-		if(this.regionActuelle.donnePos().equals(this.fourmi.fourmilliere.region.donnePos()))
+		if(this.regionActuelle.donnePos().equals(this.fourmi.fourmilliere().region().donnePos()))
 			this.fourmi.aLaMaison = true;
 		else
 			this.fourmi.aLaMaison = false;
@@ -74,9 +80,9 @@ public class RepresentationFourmi extends Representation{
 	private Region regarderAutour()
 	{
 		Region[] proximite = recupererProximite();
-		Region destination = null;
+		int  tauxMax = 0;
+		int casesPheromonisees = 0;
 		// utilisé si calcul de proba a faire;
-		ArrayList<Region> destinations = new ArrayList<Region>();
 		// Si elle a faim et qu'elle n'est pas a la fourmilliere, elle doit rentrer
 		if(!this.fourmi.aRecemmentManger() && !this.fourmi.aLaMaison)
 			this.fourmi.etat = Constantes.Etat.retourMaison;
@@ -87,62 +93,96 @@ public class RepresentationFourmi extends Representation{
 			this.regionActuelle.retirerElement(this.regionActuelle.presenceProie());
 			this.fourmi.etat = Constantes.Etat.retourMaison;
 		}
-		// Elle se deplace vers la fourmilliere
+		
+		for(int i=0; i< proximite.length;i++)
+		{
+			if((proximite[i].recupererTaux(this) == tauxMax) 
+					&& (proximite[i] != this.ancienneRegion && this.fourmi.etat != Constantes.Etat.retourMaison) )
+			{
+					casesPheromonisees++;
+			}
+			else if(proximite[i].recupererTaux(this) > tauxMax)
+			{
+				if(proximite[i] != this.ancienneRegion && this.fourmi.etat != Constantes.Etat.retourMaison)
+				{
+					casesPheromonisees=1;
+					tauxMax = proximite[i].recupererTaux(this);
+				}
+			}
+		}
 		if(this.fourmi.etat == Constantes.Etat.retourMaison)
 		{
-			return retournerMaison(proximite);
-		}
-		// sinon elle chasse
-		for(int i=0; i< proximite.length;i++)
+			return retournerMaison(casesPheromonisees, proximite, tauxMax);
+		}else if(this.fourmi.etat == Constantes.Etat.chasse)
 		{
-			// On ne reviens pas en arrière, ni a la fourmilliere quand on chasse... logique quoi !
-			if(this.ancienneRegion != proximite[i] && destination == null && this.fourmi.fourmilliere.region != proximite[i])
-			{
-				destination = proximite[i];
-				break;
-			}
+			return retournerChasse(casesPheromonisees, proximite, tauxMax);
 		}
-
-		for(int i=0; i< proximite.length;i++)
-		{
-			if(proximite[i].recupererTaux(this) == destination.recupererTaux(this))
-			{
-				destinations.add(proximite[i]);
-			}
-			else if(proximite[i].recupererTaux(this) > destination.recupererTaux(this))
-				destination = proximite[i];
-		}
-		if(destinations.size() == 0)
-			return destination;
-		else
-			return calculerProbaDestination(destinations);
+		
+		return calculerProbaDestination(casesPheromonisees, proximite, tauxMax);
 	}
 		
-	private Region calculerProbaDestination(ArrayList<Region> destinations) {
-		int choix = 0 + Aleatoire.random.nextInt(destinations.size());
-		return destinations.get(choix);
+	private Region retournerChasse(int nbCases, Region[] proximite, int tauxMax) {
+		Region r = calculerProbaDestination(nbCases, proximite, tauxMax);
+		while(r == this.ancienneRegion)
+		{
+			r = calculerProbaDestination(nbCases, proximite, tauxMax);
+		}
+		
+		return r;
 	}
 
-	private Region retournerMaison(Region[] proximite) 
-	{
-		Position posMaison = this.fourmi.fourmilliere.region.donnePos();
-		int xMaison = posMaison.getX();
-		int yMaison = posMaison.getY();
-		if(xMaison < this.regionActuelle.donnePos().getX()) // Trop a droite
+	private Region calculerProbaDestination(int nbCases, Region[] proximite, int tauxMax) {
+		int tabProbaProxi[] = {25,25,25,25};
+		if(nbCases != 4 || nbCases != 0)
 		{
-			return proximite[1];
-		}else if(xMaison > this.regionActuelle.donnePos().getX()) // Trop a gauche
-		{
-			return proximite[0];
-		}else if(yMaison < this.regionActuelle.donnePos().getY()) // Trop haut
-		{
-			return proximite[3];
-		}else if(yMaison < this.regionActuelle.donnePos().getY()) // Trop bas
-		{
-			return proximite[2];
+			for(int i = 0; i < proximite.length; i++)
+			{
+				if((proximite[i] == this.ancienneRegion && this.fourmi.etat != Constantes.Etat.retourMaison)
+						|| (proximite[i].recupererTaux(this) < tauxMax))
+				{
+					tabProbaProxi[i] = (100/4)-(nbCases*5);
+				}else
+				{
+					tabProbaProxi[i] = (100/4)+((4-nbCases)*5);
+				}
+			}
 		}
+		int choix = 0 + Aleatoire.nouveauRandom().nextInt(101);
+		if(choix < tabProbaProxi[0])
+			return proximite[0];
+		else if((choix > tabProbaProxi[0]) && (choix < (tabProbaProxi[1]+tabProbaProxi[0])))
+			return proximite[1];
+		else if(choix > (tabProbaProxi[1]+tabProbaProxi[0]) && (choix < (tabProbaProxi[0]+tabProbaProxi[1]+tabProbaProxi[2])))
+			return proximite[2];
 		else
-			return this.regionActuelle;
+			return proximite[3];
+	}
+
+	private Region retournerMaison(int nbCases, Region[] proximite, int tauxMax) 
+	{
+		Region r = calculerProbaDestination(nbCases, proximite, tauxMax);
+		while(nousEloigneMaison(r))
+		{
+			r = calculerProbaDestination(nbCases, proximite, tauxMax);
+		}
+		
+		return r;
+	}
+
+
+	/**
+	 * On verifie, si la fourmi doit rentrer chez elle que sa prochaine destination ne l'éloigne pas de la fourmilliere
+	 * @param region de destination
+	 * @return vrai si on s'éloigne, faux sinon
+	 */
+	private boolean nousEloigneMaison(Region r)
+	{	
+		Position posMaison = this.fourmi.fourmilliere().region().donnePos();
+		int distanceDestinationMaison;
+		int distanceFourmiMaison;
+		distanceDestinationMaison = (int)Math.sqrt(Math.pow((double)r.donnePos().getX()-(double)posMaison.getX(), 2)+Math.pow((double)r.donnePos().getY()-(double)posMaison.getY(),2));
+		distanceFourmiMaison = (int)Math.sqrt(Math.pow((double)this.pos.getX()-(double)posMaison.getX(), 2)+Math.pow((double)this.pos.getY()-(double)posMaison.getY(),2)); 
+		return distanceDestinationMaison > distanceFourmiMaison?true:false;
 	}
 
 	private Region[] recupererProximite()

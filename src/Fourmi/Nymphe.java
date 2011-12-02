@@ -4,7 +4,7 @@ package Fourmi;
 
 
 
-public class Nymphe extends Etape_Fourmi{
+public class Nymphe extends EtapeFourmi{
 
 	@Override
 	public void fairePour(Fourmi f) {

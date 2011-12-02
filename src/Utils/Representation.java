@@ -7,7 +7,7 @@ public abstract class Representation {
 	Region region;
 	Position pos;
 	
-	public void run() {
+	public void lancementFourmi() {
 		// TODO Auto-generated method stub
 		
 	}

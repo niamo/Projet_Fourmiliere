@@ -3,6 +3,7 @@ package Fourmi;
 import Utils.Constantes;
 
 import Environnement.Fourmilliere;
+import Environnement.Temps;
 
 
 
@@ -60,7 +61,8 @@ public class Ouvriere extends Fourmi{
 
 	@Override
 	public void travaillerPourAdulte(Adulte adulte) {
-		this.chasser();
+		if(Temps.nbHeuresDepuisDebut() > 40)
+			this.chasser();
 	}
 	
 

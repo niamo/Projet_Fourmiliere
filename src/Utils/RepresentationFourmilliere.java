@@ -16,8 +16,8 @@ public class RepresentationFourmilliere extends Representation{
 		return this.fourmilliere;
 	}
 	
-	public void run()
+	public void lancementFourmi()
 	{
-		this.fourmilliere.run();
+		this.fourmilliere.lancementFourmis();
 	}
 }

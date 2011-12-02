@@ -1,7 +1,6 @@
 package Fourmi;
 
 public class Proie {
-	//Position pos;
 	Integer poids;
 	int datePeremption;
 	
