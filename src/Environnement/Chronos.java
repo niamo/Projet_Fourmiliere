@@ -10,7 +10,7 @@ import java.util.Observer;
  * C'est également lui qui transmet les nouveaux évènements a notre classe Dieu
  * via les méthodes observer/observable
  * 
- * @author Gwen/Romain
+ * @author Gwen/Romain :)
  */
 public class Chronos extends Observable{
 	Temps temps;
